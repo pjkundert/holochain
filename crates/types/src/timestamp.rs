@@ -33,6 +33,10 @@ impl Timestamp {
     pub fn now() -> Self {
         chrono::offset::Utc::now().into()
     }
+    /// Create a new Timestamp instance from the supplied secs/nsecs.
+    pub fn new(secs: i64, nsecs: u32) -> Self {
+        Self(secs, nsecs)
+    }
 }
 
 impl std::fmt::Display for Timestamp {
@@ -43,6 +47,34 @@ impl std::fmt::Display for Timestamp {
             "{}",
             t.to_rfc3339_opts(chrono::SecondsFormat::AutoSi, true)
         )
+    }
+}
+
+/// Infallible conversions into a Timestamp.  The only infallible ways to create a Timestamp are
+/// `from` a Unix timestamp, or `new` with a timestamp and nanoseconds, or by converting to/from its
+/// underlying DateTime<Utc>.
+
+impl From<i64> for Timestamp {
+    fn from(secs: i64) -> Self {
+        Self::new(secs, 0)
+    }
+}
+
+impl From<u64> for Timestamp {
+    fn from(secs: u64) -> Self {
+        Self::new(secs as i64, 0)
+    }
+}
+
+impl From<i32> for Timestamp {
+    fn from(secs: i32) -> Self {
+        Self::new(secs.into(), 0)
+    }
+}
+
+impl From<u32> for Timestamp {
+    fn from(secs: u32) -> Self {
+        Self::new(secs.into(), 0)
     }
 }
 
