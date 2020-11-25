@@ -4,12 +4,20 @@
 //! of a timestamp, used for chronologically ordered database keys
 
 use std::convert::{TryFrom, TryInto};
+use std::time::Duration;
+use std::ops::{Add, Sub};
+use error::{TimestampError, TimestampResult};
+
+#[allow(missing_docs)]
+pub mod error;
 
 /// A UTC timestamp for use in Holochain's headers.
 ///
 /// Timestamp implements `Serialize` and `Display` as rfc3339 time strings.
 /// - Field 0: i64 - Seconds since UNIX epoch UTC (midnight 1970-01-01).
 /// - Field 1: u32 - Nanoseconds in addition to above seconds.
+///
+/// Supports +/- std::time::Duration directly
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
 )]
@@ -65,7 +73,7 @@ impl From<&Timestamp> for chrono::DateTime<chrono::Utc> {
 }
 
 impl std::convert::TryFrom<String> for Timestamp {
-    type Error = chrono::ParseError;
+    type Error = TimestampError;
 
     fn try_from(t: String) -> Result<Self, Self::Error> {
         std::convert::TryFrom::try_from(&t)
@@ -73,11 +81,11 @@ impl std::convert::TryFrom<String> for Timestamp {
 }
 
 impl std::convert::TryFrom<&String> for Timestamp {
-    type Error = chrono::ParseError;
+    type Error = TimestampError;
 
     fn try_from(t: &String) -> Result<Self, Self::Error> {
         let t: &str = &t;
-        std::convert::TryFrom::try_from(t)
+        Ok(std::convert::TryFrom::try_from(t)?)
     }
 }
 
@@ -102,6 +110,53 @@ impl From<holochain_zome_types::timestamp::Timestamp> for Timestamp {
         Self(ts.0, ts.1)
     }
 }
+
+/// Timestamp +- Into<Duration>: Add anything that can be converted into a std::time::Duration
+/// can be used as an overflow-checked offset for a Timestamp.
+impl<D: Into<Duration>> Add<D> for Timestamp {
+    type Output = TimestampResult<Timestamp>;
+    fn add(self, rhs: D) -> Self::Output {
+        let dur: Duration = rhs.into();
+        Ok(chrono::DateTime::<chrono::Utc>::from(&self)
+            .checked_add_signed(chrono::Duration::from_std(dur).or_else(|_e| {
+                Err(TimestampError::Overflow)
+	    })?)
+            .ok_or_else(|| {
+                TimestampError::Overflow
+            })?
+            .into())
+    }
+}
+
+impl<D: Into<Duration>> Add<D> for &Timestamp {
+    type Output = TimestampResult<Timestamp>;
+    fn add(self, rhs: D) -> Self::Output {
+        self.to_owned() + rhs
+    }
+}
+
+impl<D: Into<Duration>> Sub<D> for Timestamp {
+    type Output = TimestampResult<Timestamp>;
+    fn sub(self, rhs: D) -> Self::Output {
+        let dur: Duration = rhs.into();
+        Ok(chrono::DateTime::<chrono::Utc>::from(&self)
+            .checked_sub_signed(chrono::Duration::from_std(dur).or_else(|_e| {
+                Err(TimestampError::Overflow)
+            })?)
+            .ok_or_else(|| {
+                TimestampError::Overflow
+            })?
+            .into())
+    }
+}
+
+impl<D: Into<Duration>> Sub<D> for &Timestamp {
+    type Output = TimestampResult<Timestamp>;
+    fn sub(self, rhs: D) -> Self::Output {
+        self.to_owned() - rhs
+    }
+}
+
 
 const SEC: usize = std::mem::size_of::<i64>();
 const NSEC: usize = std::mem::size_of::<u32>();
