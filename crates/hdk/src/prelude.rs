@@ -79,6 +79,7 @@ pub use holochain_zome_types::query::ChainQueryFilter;
 pub use holochain_zome_types::signature::Sign;
 pub use holochain_zome_types::signature::Signature;
 pub use holochain_zome_types::signature::VerifySignature;
+pub use holochain_zome_types::timestamp::*;
 pub use holochain_zome_types::validate::RequiredValidationType;
 pub use holochain_zome_types::validate::ValidateCallbackResult;
 pub use holochain_zome_types::validate::ValidateData;

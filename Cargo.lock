@@ -1529,6 +1529,7 @@ dependencies = [
 name = "holochain_zome_types"
 version = "0.0.1"
 dependencies = [
+ "chrono",
  "fixt",
  "holo_hash",
  "holochain_serialized_bytes",
