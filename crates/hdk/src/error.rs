@@ -1,3 +1,8 @@
+use holo_hash::AgentPubKey;
+use holochain_zome_types::{
+    prelude::CellId,
+    zome::{FunctionName, ZomeName},
+};
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum HdkError {

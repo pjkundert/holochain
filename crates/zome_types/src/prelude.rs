@@ -20,6 +20,7 @@ pub use crate::{
     post_commit::PostCommitCallbackResult,
     query::{ActivityRequest, AgentActivity, ChainQueryFilter, ChainQueryFilter as QueryFilter},
     signature::{Sign, Signature, VerifySignature},
+    timestamp::*,
     validate::{
         RequiredValidationType, ValidateCallbackResult, ValidateData, ValidationPackage,
         ValidationPackageCallbackResult,
