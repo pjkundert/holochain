@@ -9,7 +9,7 @@ pub use crate::{
     cell::*,
     crdt::CrdtType,
     debug_msg,
-    element::{Element, ElementVec},
+    element::*,
     entry::*,
     entry_def::*,
     header::*,

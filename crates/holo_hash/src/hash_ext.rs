@@ -8,32 +8,6 @@ use hash_type::{HashTypeAsync, HashTypeSync};
 /// take too long to hash within a single tokio context
 pub const MAX_HASHABLE_CONTENT_LEN: usize = 16 * 1000 * 1000; // 16 MiB
 
-impl<T: HashType> HoloHash<T> {
-    /// Construct a HoloHash from a 32-byte hash.
-    /// The 3 prefix bytes will be added based on the provided HashType,
-    /// and the 4 location bytes will be computed.
-    ///
-    /// For convenience, 36 bytes can also be passed in, in which case
-    /// the location bytes will used as provided, not computed.
-    pub fn from_raw_32_and_type(mut hash: Vec<u8>, hash_type: T) -> Self {
-        if hash.len() == HOLO_HASH_CORE_LEN {
-            hash.append(&mut encode::holo_dht_location_bytes(&hash));
-        }
-
-        assert_length!(HOLO_HASH_UNTYPED_LEN, &hash);
-
-        HoloHash::from_raw_36_and_type(hash, hash_type)
-    }
-}
-
-impl<P: PrimitiveHashType> HoloHash<P> {
-    /// Construct a HoloHash from a prehashed raw 32-byte slice.
-    /// The location bytes will be calculated.
-    pub fn from_raw_32(hash: Vec<u8>) -> Self {
-        HoloHash::from_raw_32_and_type(hash, P::new())
-    }
-}
-
 impl<T: HashTypeSync> HoloHash<T> {
     /// Synchronously hash a reference to the given content to produce a HoloHash
     /// If the content is larger than MAX_HASHABLE_CONTENT_LEN, this will **panic**!

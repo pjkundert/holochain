@@ -13,7 +13,7 @@ use holochain_serialized_bytes::prelude::*;
 
 /// a chain element which is a triple containing the signature of the header along with the
 /// entry if the header type has one.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, SerializedBytes)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, SerializedBytes)]
 pub struct Element {
     /// The signed header for this element
     signed_header: SignedHeaderHashed,
@@ -82,7 +82,7 @@ impl Element {
 }
 
 /// Small struct to allow the return type of `query()` to be a vector of elements
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, SerializedBytes)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, SerializedBytes)]
 pub struct ElementVec(pub Vec<Element>);
 
 /// Represents the different ways the entry_address reference within a Header
@@ -156,7 +156,7 @@ impl ElementEntry {
 /// A combination of a Header and its signature.
 ///
 /// Has implementations From and Into its tuple form.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, SerializedBytes)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, SerializedBytes)]
 pub struct SignedHeader(pub Header, pub Signature);
 
 impl SignedHeader {
@@ -188,7 +188,7 @@ impl HashableContent for SignedHeader {
 }
 
 /// The header and the signature that signed it
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SignedHeaderHashed {
     header: HeaderHashed,
     signature: Signature,
