@@ -71,9 +71,12 @@ impl AppInterfaceApi for RealAppInterfaceApi {
                 self.handle_app_request_inner(AppRequest::ZomeCall(call))
                     .await
                     .map(|r| {
-                        AppResponse::ZomeCallInvocation(
-                            unwrap_to::unwrap_to!(r => AppResponse::ZomeCall).clone(),
-                        )
+                        AppResponse::ZomeCallInvocation(match r {
+                            AppResponse::ZomeCall(zc) => zc.clone(),
+                            other => {
+                                panic!("Found {:?} when ZomeCall was expected", other)
+                            }
+                        })
                     })
             }
             AppRequest::ZomeCall(call) => {
