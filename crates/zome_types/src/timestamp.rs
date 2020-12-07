@@ -15,7 +15,9 @@ pub use error::{TimestampError, TimestampResult};
 /// - Field 0: i64 - Seconds since UNIX epoch UTC (midnight 1970-01-01).
 /// - Field 1: u32 - Nanoseconds in addition to above seconds.
 /// 
-/// Supports +/- std::time::Duration directly
+/// Supports +/- std::time::Duration directly.  There is no now() method, since
+/// this is not supported by WASM.
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Timestamp(
     // sec
@@ -25,10 +27,6 @@ pub struct Timestamp(
 );
 
 impl Timestamp {
-    /// Create a new Timestamp instance from current system time.
-    pub fn now() -> Self {
-        chrono::offset::Utc::now().into()
-    }
     /// Create a new Timestamp instance from the supplied secs/nsecs.
     pub fn new(secs: i64, nsecs: u32) -> Self {
         Self(secs, nsecs)
