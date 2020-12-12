@@ -61,6 +61,6 @@ use crate::prelude::*;
 /// on the current time within relatively tight accuracy/precision up-front in a relatively trusted
 /// environment e.g. a chess game between friends with time moves that balances security/trust and
 /// flaky networking, etc.
-pub fn sys_time() -> HdkResult<core::time::Duration> {
+pub fn sys_time() -> HdkResult<Timestamp> {
     Ok(host_call::<SysTimeInput, SysTimeOutput>(__sys_time, &SysTimeInput::new(()))?.into_inner())
 }

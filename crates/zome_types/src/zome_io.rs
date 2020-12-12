@@ -165,8 +165,8 @@ wasm_io_types! {
     // The pubkey in the input needs to be found in the keystore for this to work
     fn sign (zt::signature::Sign) -> zt::signature::Signature;
 
-    // Current system time, in the opinion of the host, as a `Duration`.
-    fn sys_time (()) -> core::time::Duration;
+    // Current system time, in the opinion of the host, as a `Timestamp`.
+    fn sys_time (()) -> zt::timestamp::Timestamp;
 
     // Same as  but also takes the HeaderHash of the updated element.
     fn update ((zt::entry_def::EntryDefId, zt::entry::Entry, holo_hash::HeaderHash)) -> holo_hash::HeaderHash;

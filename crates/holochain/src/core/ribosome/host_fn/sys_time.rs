@@ -11,9 +11,9 @@ pub fn sys_time(
     _input: SysTimeInput,
 ) -> RibosomeResult<SysTimeOutput> {
     let start = std::time::SystemTime::now();
+    // May fail due to system time adjustments backwards
     let since_the_epoch = start
-        .duration_since(std::time::UNIX_EPOCH)
-        .expect("Time went backwards");
+        .duration_since(std::time::UNIX_EPOCH)?;
     Ok(SysTimeOutput::new(since_the_epoch))
 }
 
