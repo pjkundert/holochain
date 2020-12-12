@@ -3,10 +3,16 @@
 #[allow(missing_docs)]
 mod error;
 
-use std::time::Duration;
-use std::ops::{Add, Sub};
-use std::convert::TryFrom;
-use serde::{Serialize, Deserialize};
+use std::{
+    fmt,
+    time::Duration,
+    ops::{Add, Sub},
+    convert::TryFrom,
+    str::FromStr,
+};
+
+use crate::prelude::*;
+
 pub use error::{TimestampError, TimestampResult};
 
 /// A UTC timestamp for use in Holochain's headers.
@@ -17,8 +23,8 @@ pub use error::{TimestampError, TimestampResult};
 /// 
 /// Supports +/- std::time::Duration directly.  There is no now() method, since
 /// this is not supported by WASM.
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+/// 
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, Serialize, SerializedBytes)]
 pub struct Timestamp(
     // sec
     pub i64,
@@ -33,16 +39,20 @@ impl Timestamp {
     }
 }
 
-impl std::fmt::Display for Timestamp {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for Timestamp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let t: chrono::DateTime<chrono::Utc> = self.into();
-        write!(
-            f,
-            "{}",
-            t.to_rfc3339_opts(chrono::SecondsFormat::AutoSi, true)
-        )
+        write!(f, "{}", t.to_rfc3339_opts(chrono::SecondsFormat::AutoSi, true))
     }
 }
+
+
+impl fmt::Debug for Timestamp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Timestamp({})", self)
+    }
+}
+
 
 /// Infallible conversions into a Timestamp.  The only infallible ways to create a Timestamp are
 /// `from` a Unix timestamp, or `new` with a timestamp and nanoseconds, or by converting to/from its
@@ -98,11 +108,21 @@ impl From<&Timestamp> for chrono::DateTime<chrono::Utc> {
     }
 }
 
+impl FromStr for Timestamp {
+    type Err = TimestampError;
+
+    fn from_str(t: &str) -> Result<Self, Self::Err> {
+        let t = chrono::DateTime::parse_from_rfc3339(t)?;
+        let t = chrono::DateTime::from_utc(t.naive_utc(), chrono::Utc);
+        Ok(t.into())
+    }
+}
+
 impl TryFrom<String> for Timestamp {
     type Error = TimestampError;
 
     fn try_from(t: String) -> Result<Self, Self::Error> {
-        TryFrom::try_from(&t)
+        Ok(TryFrom::try_from(&t)?)
     }
 }
 
@@ -116,12 +136,10 @@ impl TryFrom<&String> for Timestamp {
 }
 
 impl TryFrom<&str> for Timestamp {
-    type Error = chrono::ParseError;
+    type Error = TimestampError;
 
     fn try_from(t: &str) -> Result<Self, Self::Error> {
-        let t = chrono::DateTime::parse_from_rfc3339(t)?;
-        let t = chrono::DateTime::from_utc(t.naive_utc(), chrono::Utc);
-        Ok(t.into())
+        Timestamp::from_str(t)
     }
 }
 
