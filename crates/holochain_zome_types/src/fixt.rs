@@ -25,16 +25,26 @@ use std::collections::HashSet;
 
 pub use holo_hash::fixt::*;
 
+// Create random timestamps that are guaranteed to be valid UTC date and time (see datetime
+// from_timestamp implementation)
+//  - valid +'ve seconds, convertible to +'ve i32 when divided by days
+//  - valid nanoseconds
 fixturator!(
     Timestamp;
     curve Empty {
-        Timestamp(I64Fixturator::new(Empty).next().unwrap(), U32Fixturator::new(Empty).next().unwrap())
+        Timestamp((I64Fixturator::new(Empty).next().unwrap().abs()
+		   % ((i32::MAX as i64) * 86_400)).abs(),
+		  U32Fixturator::new(Empty).next().unwrap() % 1000000000)
     };
     curve Unpredictable {
-        Timestamp(I64Fixturator::new(Unpredictable).next().unwrap(), U32Fixturator::new(Unpredictable).next().unwrap())
+        Timestamp((I64Fixturator::new(Unpredictable).next().unwrap()
+		   % ((i32::MAX as i64) * 86_400)).abs(),
+		  U32Fixturator::new(Unpredictable).next().unwrap() % 1000000000)
     };
     curve Predictable {
-        Timestamp(I64Fixturator::new(Predictable).next().unwrap(), U32Fixturator::new(Predictable).next().unwrap())
+        Timestamp((I64Fixturator::new(Predictable).next().unwrap()
+		   % ((i32::MAX as i64) * 86_400)).abs(),
+		  U32Fixturator::new(Predictable).next().unwrap() % 1000000000)
     };
 );
 

@@ -1,8 +1,7 @@
 use holo_hash::AgentPubKey;
 use holochain_zome_types::prelude::*;
-use thiserror::Error;
 
-#[derive(Debug, Clone, Error)]
+#[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum HdkError {
     #[error(transparent)]
     EntryError(#[from] holochain_zome_types::entry::EntryError),
