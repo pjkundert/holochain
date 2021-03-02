@@ -97,6 +97,20 @@ fn validate_create_entry_post(
 }
 
 #[hdk_extern]
+fn validate_create_entry_msg(
+    _validation_data: ValidateData,
+) -> ExternResult<ValidateCallbackResult> {
+    Ok(ValidateCallbackResult::Valid)
+}
+
+#[hdk_extern]
+fn validate_create_entry_setup(
+    _validation_data: ValidateData,
+) -> ExternResult<ValidateCallbackResult> {
+    Ok(ValidateCallbackResult::Valid)
+}
+
+#[hdk_extern]
 fn get_activity(
     input: holochain_test_wasm_common::AgentActivitySearch,
 ) -> ExternResult<AgentActivity> {

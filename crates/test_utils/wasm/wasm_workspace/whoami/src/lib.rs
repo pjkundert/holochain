@@ -1,5 +1,15 @@
 use hdk::prelude::*;
 
+entry_defs![Init::entry_def()];
+
+#[hdk_entry(
+    id = "init",
+    required_validations = 5,
+    required_validation_type = "element"
+)]
+struct Init(String);
+
+
 #[hdk_extern]
 fn init(_: ()) -> ExternResult<InitCallbackResult> {
     // grant unrestricted access to whoami_open so random agents can call it
@@ -11,7 +21,7 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
         access: ().into(),
         functions,
     })?;
-
+    create_entry(&Init(String::from("Hello from whoami Zome")))?;
     Ok(InitCallbackResult::Pass)
 }
 
