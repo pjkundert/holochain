@@ -196,6 +196,8 @@ pub mod hdi;
 
 pub mod link;
 
+pub mod chain;
+
 #[deny(missing_docs)]
 pub mod op;
 
