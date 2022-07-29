@@ -34,6 +34,8 @@ fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 entry_type: EntryTypes::AgentsChainRec(AgentsChainRec(author, chain_top)),
                 ..
             } => {
+                // Starting from the chain_top, loop looking back by 2 entries at a time, 'til we
+                // reach the initial entry (Action w/ sequence 0).  Why?  Just 'cause we can.
                 let mut filter = ChainFilter::new(chain_top).take(2);
                 loop {
                     let chain = must_get_agent_activity(author.clone(), filter.clone())?;
@@ -53,7 +55,7 @@ fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                         }
                         None => {
                             return Ok(ValidateCallbackResult::Invalid(
-                                "Could not recurse to bottom of agents chain".to_string(),
+                                "Could not iterate to bottom of agents chain".to_string(),
                             ))
                         }
                     }
