@@ -259,13 +259,6 @@ where
 /// Full records are returned for direct references to the passed hash.
 /// Action hashes are returned for references to references to the passed hash.
 ///
-/// [`Details::Record`] for an action hash return:
-/// - the record for this action hash if it exists
-/// - all update and delete _records_ that reference that specified action
-///
-/// [`Details::Entry`] for an entry hash return:
-/// - all creates, updates and delete _records_ that reference that entry hash
-/// - all update and delete _records_ that reference the records that reference the entry hash
 ///
 /// Note: Entries are just values, so can be referenced by many CRUD actions by many authors.
 ///       e.g. the number 1 or string "foo" can be referenced by anyone publishing CRUD actions at
